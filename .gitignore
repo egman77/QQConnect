@@ -29,3 +29,4 @@ project.lock.json
 .build/
 .testPublish/
 global.json
+/samples/Demo/.config/dotnet-tools.json
