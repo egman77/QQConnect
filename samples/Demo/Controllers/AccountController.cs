@@ -27,6 +27,8 @@ namespace Demo.Controllers
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
 
+        private const string Provider_WeChat = "WeChat";
+
         //public AccountController(
         //  //  UserManager<ApplicationUser> userManager,
         //  //  SignInManager<ApplicationUser> signInManager,
@@ -264,11 +266,94 @@ namespace Demo.Controllers
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
+
+        [AllowAnonymous]
+        [HttpGet]
+        public IActionResult LoginByWeChat(string redirectUrl)
+        {
+
+            var request = _contextAccessor.HttpContext.Request;
+            // Url.Action(nameof(LoginByWeChatCallbackAsync), "Account", new { provider = Provider_WeChat, redirectUrl = redirectUrl ?? "/" });
+            // var url =$"http://debug.cvoit.com{request.PathBase}{request.Path}callbackAsync?provider={Provider_WeChat}&redirectUrl={redirectUrl??"/"}";
+            var url = $"http://debug.cvoit.com{request.PathBase}{request.Path}callbackAsync";
+           // var properties = this._signInManager.ConfigureExternalAuthenticationProperties(Provider_WeChat, url);
+            var properties = new AuthenticationProperties { RedirectUri = url };
+            properties.Items[LoginProviderKey] = Provider_WeChat;
+            return Challenge(properties, Provider_WeChat); //发起提问?
+            //return View();
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<IActionResult> LoginByWeChatCallbackAsync(string provider = null, string redirectUrl = "/")
+        {
+            var authenticateResult = await _contextAccessor.HttpContext.AuthenticateAsync(provider); //提取验证结果
+            if (!authenticateResult.Succeeded)
+                return Redirect(redirectUrl);
+
+            // var principal = authenticateResult.Principal;
+            var openIdClaim = authenticateResult.Principal.FindFirst(ClaimTypes.NameIdentifier); //查名称标识符
+            if (openIdClaim == null || string.IsNullOrWhiteSpace(openIdClaim.Value))
+            {
+                return Redirect(redirectUrl);//也返回
+            }
+
+            //todo 记录授权成功后的微信信息
+
+            var (_, _, _, nickName, openId, _, _, _, _) = _get(authenticateResult.Principal);
+
+            _logger?.LogDebug($"Wechat Info=>{nameof(openId)}:{openId} nickName:{nickName}...");
+            return Redirect($"{redirectUrl}?openId={openId}");//也可以使用openIdClaim.Value
+                                                              //var (city,country,headImgurl,nickName,openId,privilege,province,sex,unionId) = () =>
+                                                              //{
+                                                              //    return (
+                                                              //          (string)principal.FindFirst("urn:wechat:city")?.Value,
+                                                              //          principal.FindFirst(ClaimTypes.Country)?.Value,
+                                                              //          principal.FindFirst(ClaimTypes.Uri)?.Value,
+                                                              //          principal.FindFirst(ClaimTypes.Name)?.Value,
+                                                              //          principal.FindFirst(ClaimTypes.NameIdentifier)?.Value,
+                                                              //          principal.FindFirst("urn:wechat:privilege")?.Value,
+                                                              //          principal.FindFirst("urn:wechat:province")?.Value,
+                                                              //          principal.FindFirst(ClaimTypes.Gender)?.Value,
+                                                              //          principal.FindFirst("urn:wechat:unionid")?.Value
+                                                              //    );
+                                                              //};
+
+            //var (city) = () => {
+            //    return ("nn");
+            //};
+
+            //var (city, country) = xx();
+            //(string city2, string country2) = xx();
+            //Func<(string city,string country)> xx= delegate (){ 
+            //     return ("nn", "dd");
+            // };
+
+        }
+
+#pragma warning disable IDE1006 // 命名样式
+        (string city, string country, string headImgurl, string nickName, string openId, string privilege, string province, string sex, string unionId) _get(ClaimsPrincipal principal)
+#pragma warning restore IDE1006 // 命名样式
+        {
+            return (
+                  principal.FindFirst("urn:wechat:city")?.Value,
+                  principal.FindFirst(ClaimTypes.Country)?.Value,
+                  principal.FindFirst(ClaimTypes.Uri)?.Value,
+                  principal.FindFirst(ClaimTypes.Name)?.Value,
+                  principal.FindFirst(ClaimTypes.NameIdentifier)?.Value,
+                  principal.FindFirst("urn:wechat:privilege")?.Value,
+                  principal.FindFirst("urn:wechat:province")?.Value,
+                  principal.FindFirst(ClaimTypes.Gender)?.Value,
+                  principal.FindFirst("urn:wechat:unionid")?.Value
+            );
+        }
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public IActionResult ExternalLogin(string provider, string returnUrl = null)
+        public IActionResult ExternalLogin( string returnUrl = null)
         {
+            var provider = Provider_WeChat;
             // Request a redirect to the external login provider.
             // var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Account", new { returnUrl });
             // var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
