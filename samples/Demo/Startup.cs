@@ -43,21 +43,23 @@ namespace Demo
                 .AddDefaultTokenProviders();
 
             // Add application services.
-            services.AddTransient<IEmailSender, EmailSender>();
+           // services.AddTransient<IEmailSender, EmailSender>();
 
-            services.AddAuthentication().AddMicrosoftAccount(microsoftOptions =>
-            {
-                microsoftOptions.ClientId = Configuration["Authentication:Microsoft:ApplicationId"];
-                microsoftOptions.ClientSecret = Configuration["Authentication:Microsoft:Password"];
-            })/*.AddGoogle(googleOptions => //Google
-            {
-                googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
-                googleOptions.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
-            })*/.AddQQ(qqOptions =>
-            {
-                qqOptions.AppId = Configuration["Authentication:QQ:AppId"];
-                qqOptions.AppKey = Configuration["Authentication:QQ:AppKey"];
-            }).AddWeChat(options => {
+            services.AddAuthentication()
+            //    .AddMicrosoftAccount(microsoftOptions =>
+            //{
+            //    microsoftOptions.ClientId = Configuration["Authentication:Microsoft:ApplicationId"];
+            //    microsoftOptions.ClientSecret = Configuration["Authentication:Microsoft:Password"];
+            //})/*.AddGoogle(googleOptions => //Google
+            //{
+            //    googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
+            //    googleOptions.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+            //})*/.AddQQ(qqOptions =>
+            //{
+            //    qqOptions.AppId = Configuration["Authentication:QQ:AppId"];
+            //    qqOptions.AppKey = Configuration["Authentication:QQ:AppKey"];
+            //})
+            .AddWeChat(options => {
                 options.AppId = Configuration["Authentication:WeChat:AppId"];
                 options.AppSecret = Configuration["Authentication:WeChat:AppSecret"];
 
