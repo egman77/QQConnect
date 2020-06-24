@@ -12,6 +12,10 @@
     <Description>QQ登录示例</Description>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Controllers\ManageController.cs" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
