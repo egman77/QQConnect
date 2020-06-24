@@ -18,17 +18,22 @@ namespace Demo
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
-        {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables()
-                .AddUserSecrets<Startup>();
 
-            Configuration = builder.Build();
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
         }
+        //public Startup(IHostingEnvironment env)
+        //{
+        //    var builder = new ConfigurationBuilder()
+        //        .SetBasePath(env.ContentRootPath)
+        //        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+        //        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+        //        .AddEnvironmentVariables()
+        //        .AddUserSecrets<Startup>();
+
+        //    Configuration = builder.Build();
+        //}
 
         public IConfiguration Configuration { get; }
 
@@ -43,8 +48,8 @@ namespace Demo
                 .AddDefaultTokenProviders();
 
             // Add application services.
-           // services.AddTransient<IEmailSender, EmailSender>();
-
+            // services.AddTransient<IEmailSender, EmailSender>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddAuthentication()
             //    .AddMicrosoftAccount(microsoftOptions =>
             //{

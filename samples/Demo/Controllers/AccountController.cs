@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using Demo.Models;
 using Demo.Models.AccountViewModels;
 using Demo.Services;
+using Microsoft.AspNetCore.Http;
 
 namespace Demo.Controllers
 {
@@ -20,21 +21,34 @@ namespace Demo.Controllers
     [Route("[controller]/[action]")]
     public class AccountController : Controller
     {
+        private const string LoginProviderKey = "LoginProvider"; //方法前缀
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
 
-        public AccountController(
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
-           // IEmailSender emailSender,
-            ILogger<AccountController> logger)
+        //public AccountController(
+        //  //  UserManager<ApplicationUser> userManager,
+        //  //  SignInManager<ApplicationUser> signInManager,
+        //   // IEmailSender emailSender,
+        //    ILogger<AccountController> logger)
+        //{
+        // //   _userManager = userManager;
+        // //   _signInManager = signInManager;
+        //   // _emailSender = emailSender;
+        //    _logger = logger;
+        //}
+
+        private readonly IHttpContextAccessor _contextAccessor;
+        public AccountController(ILogger<AccountController> logger,
+            IHttpContextAccessor contextAccessor
+           // SignInManager<IdentityUser> signInManager
+           )
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-           // _emailSender = emailSender;
-            _logger = logger;
+            this._logger = logger;
+            this._contextAccessor = contextAccessor;
+           // this._signInManager = signInManager;
+
         }
 
         [TempData]
@@ -256,8 +270,13 @@ namespace Demo.Controllers
         public IActionResult ExternalLogin(string provider, string returnUrl = null)
         {
             // Request a redirect to the external login provider.
-            var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Account", new { returnUrl });
-            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            // var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Account", new { returnUrl });
+            // var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            var request = _contextAccessor.HttpContext.Request;
+            Url.Action(nameof(ExternalLoginCallback), "Account", new { provider = provider, redirectUrl = returnUrl ?? "/" });
+            var url =$"http://debug.cvoit.com{request.PathBase}{request.Path}callbackAsync?provider={provider}&redirectUrl={returnUrl ?? "/"}";
+            var properties = new AuthenticationProperties { RedirectUri = url };
+            properties.Items[LoginProviderKey] = provider;
             return Challenge(properties, provider);
         }
 
