@@ -12,6 +12,7 @@ using Demo.Data;
 using Demo.Models;
 using Demo.Services;
 using System;
+using System.Threading.Tasks;
 
 namespace Demo
 {
@@ -56,9 +57,37 @@ namespace Demo
             {
                 qqOptions.AppId = Configuration["Authentication:QQ:AppId"];
                 qqOptions.AppKey = Configuration["Authentication:QQ:AppKey"];
-            }).AddWeChat(wechatOptions => {
-                wechatOptions.AppId = Configuration["Authentication:WeChat:AppId"];
-                wechatOptions.AppSecret = Configuration["Authentication:WeChat:AppSecret"];
+            }).AddWeChat(options => {
+                options.AppId = Configuration["Authentication:WeChat:AppId"];
+                options.AppSecret = Configuration["Authentication:WeChat:AppSecret"];
+
+                //1.创建Ticket之前触发
+                options.Events.OnCreatingTicket = ContextBoundObject =>
+                {
+
+                    return Task.CompletedTask;
+
+                };
+                //    //2.创建Ticket失败时触发
+                options.Events.OnRemoteFailure = context =>
+                {
+                    return Task.CompletedTask;
+                };
+                //    //3.Tick接收完成之后触发
+                options.Events.OnTicketReceived = context =>
+                {
+                    return Task.CompletedTask;
+                };
+                //    //4.Challenge时触发,默认转到OAuth服务器
+                options.Events.OnRedirectToAuthorizationEndpoint = context =>
+                {
+
+                    var uri = new UriBuilder(context.RedirectUri);
+                    uri.Query = new Regex("(?<=redirect_uri=).+(?=&response_type=code)").Replace(uri.Query, WebUtility.UrlEncode(context.Properties.RedirectUri));
+
+                    context.Response.Redirect(uri.ToString());
+                    return Task.CompletedTask;
+                };
             }) ;
 
             services.AddMvc();
