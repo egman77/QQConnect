@@ -22,9 +22,9 @@ namespace Demo.Controllers
     public class AccountController : Controller
     {
         private const string LoginProviderKey = "LoginProvider"; //方法前缀
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IEmailSender _emailSender;
+        //private readonly UserManager<ApplicationUser> _userManager;
+        //private readonly SignInManager<ApplicationUser> _signInManager;
+        //private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
 
         private const string Provider_WeChat = "WeChat";
