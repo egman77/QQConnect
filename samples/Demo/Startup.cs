@@ -82,10 +82,11 @@ namespace Demo
                 options.Events.OnRedirectToAuthorizationEndpoint = context =>
                 {
 
-                    var uri = new UriBuilder(context.RedirectUri);
-                    uri.Query = new Regex("(?<=redirect_uri=).+(?=&response_type=code)").Replace(uri.Query, WebUtility.UrlEncode(context.Properties.RedirectUri));
+                    //var uri = new UriBuilder(context.RedirectUri);
+                    //uri.Query = new Regex("(?<=redirect_uri=).+(?=&response_type=code)").Replace(uri.Query, WebUtility.UrlEncode(context.Properties.RedirectUri));
 
-                    context.Response.Redirect(uri.ToString());
+                    //context.Response.Redirect(uri.ToString());
+                    context.Response.Redirect(context.RedirectUri);
                     return Task.CompletedTask;
                 };
             }) ;
@@ -96,7 +97,7 @@ namespace Demo
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            if (env.IsDevelopment())
+            if (true) // env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 //app.UseBrowserLink();

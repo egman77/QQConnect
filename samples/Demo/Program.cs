@@ -19,8 +19,8 @@ namespace Demo
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-            .UseKestrel()
-                .UseIISIntegration()
+           // .UseKestrel()
+               // .UseIISIntegration()
                 .UseStartup<Startup>()
                 .Build();
     }
