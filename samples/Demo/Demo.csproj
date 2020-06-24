@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <UserSecretsId>aspnet-QQConnectDemo-2E8C45AE-38FD-4C3B-BE89-1797BCB73E71</UserSecretsId>
     <PackageId>QQConnectDemo</PackageId>
     <Authors>LDMING</Authors>
