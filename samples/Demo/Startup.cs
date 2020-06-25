@@ -13,6 +13,7 @@ using Demo.Models;
 using Demo.Services;
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Demo
 {
@@ -43,9 +44,10 @@ namespace Demo
             //services.AddDbContext<ApplicationDbContext>(options =>
             //    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            //services.AddIdentity<ApplicationUser, IdentityRole>()
-            //    .AddEntityFrameworkStores<ApplicationDbContext>()
-            //    .AddDefaultTokenProviders();
+            services.AddIdentity<IdentityUser, IdentityRole>();
+           // services.AddIdentity<ApplicationUser, IdentityRole>();
+               // .AddEntityFrameworkStores<ApplicationDbContext>()
+               // .AddDefaultTokenProviders();
 
             // Add application services.
             // services.AddTransient<IEmailSender, EmailSender>();
@@ -68,6 +70,9 @@ namespace Demo
                 options.AppId = Configuration["Authentication:WeChat:AppId"];
                 options.AppSecret = Configuration["Authentication:WeChat:AppSecret"];
 
+               //options.CallbackPath = Configuration["Authentication:WeChat:CallbackPath"];
+
+               // options.UseCachedStateDataFormat = true;
                 //1.创建Ticket之前触发
                 options.Events.OnCreatingTicket = ContextBoundObject =>
                 {
@@ -98,7 +103,7 @@ namespace Demo
                 };
             }) ;
 
-            services.AddMvc();
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

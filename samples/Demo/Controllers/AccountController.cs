@@ -275,7 +275,7 @@ namespace Demo.Controllers
             var request = _contextAccessor.HttpContext.Request;
             // Url.Action(nameof(LoginByWeChatCallbackAsync), "Account", new { provider = Provider_WeChat, redirectUrl = redirectUrl ?? "/" });
             // var url =$"http://debug.cvoit.com{request.PathBase}{request.Path}callbackAsync?provider={Provider_WeChat}&redirectUrl={redirectUrl??"/"}";
-            var url = $"http://debug.cvoit.com{request.PathBase}{request.Path}callbackAsync";
+            var url = $"http://debug.cvoit.com{request.PathBase}{request.Path}callback";
            // var properties = this._signInManager.ConfigureExternalAuthenticationProperties(Provider_WeChat, url);
             var properties = new AuthenticationProperties { RedirectUri = url };
             properties.Items[LoginProviderKey] = Provider_WeChat;
